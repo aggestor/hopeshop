@@ -23,6 +23,7 @@ export type UserInfoType = {
     mobile: string
     email : string
     status : number
+    isRegistered : number
     password : boolean
     createdAt : Date
     updatedAt : Date
