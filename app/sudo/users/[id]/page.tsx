@@ -15,6 +15,7 @@ import { useParams } from "next/navigation";
 import Image from "next/image";
 import parseImage from "@/utils/parse-image";
 import useMoment from "@/utils/use-moment";
+import { Ok, Oups } from "@/utils/emitter";
 
 export default function UserPage(){
     const [user, setUser] =  useState<tUser>()
@@ -41,10 +42,20 @@ export default function UserPage(){
         const rs = await User.ban(params.id as string)
         if(rs.status == 201){
             getUser()
-            
+            Ok("User banned successfully")
+        }else{
+            Oups("Something went wrong ")
         }
     }
-    const unbanUser =  async () =>{}
+    const unbanUser =  async () =>{
+        const rs = await User.unBan(params.id as string)
+        if(rs.status == 201){
+            getUser()
+            Ok("User unbaned successfully")
+        }else{
+            Oups("Something went wrong ")
+        }
+    }
     useEffect(()=>{
         getUser()
     },[])
