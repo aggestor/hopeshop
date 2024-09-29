@@ -37,7 +37,13 @@ export default function UserPage(){
             setUser(u.data.user)
         }
     }
-    const banUser =  async () =>{}
+    const banUser =  async () =>{
+        const rs = await User.ban(params.id as string)
+        if(rs.status == 201){
+            getUser()
+            
+        }
+    }
     const unbanUser =  async () =>{}
     useEffect(()=>{
         getUser()
