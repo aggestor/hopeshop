@@ -1,13 +1,12 @@
 "use client"
-import { BsAt, BsBan, BsCalendar2, BsCheck, BsClockHistory, BsFilter, BsListStars, BsPeople, BsPhone, BsPlus, BsToggleOff, BsToggleOn } from "react-icons/bs";
+import { BsAt, BsCalendar2, BsCheck, BsClockHistory, BsListStars, BsPeople, BsPhone, BsPlus, BsToggleOff, BsToggleOn } from "react-icons/bs";
 import GoBack from "../../components/GoBack";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import TextInput from "@/components/TextInput";
 import useForm from "@/hooks/useForm";
 import PrimaryButton from "@/components/PrimaryButton";
 import User from "@/services/User";
 import { UserInfoType as tUser } from "@/types";
-import { toast } from "sonner";
 import Reload from "../../components/Reload";
 import formatPhoneNumber from "@/utils/format-phone-number";
 import Link from "next/link";
@@ -16,17 +15,19 @@ import Image from "next/image";
 import parseImage from "@/utils/parse-image";
 import useMoment from "@/utils/use-moment";
 import { Ok, Oups } from "@/utils/emitter";
+import DeleteBtn from "../../components/DeleteBtn";
 
 export default function UserPage(){
     const [user, setUser] =  useState<tUser>()
     const [loading, setLoading] = useState(true)
+    const [deletePopup,setDeletePopup] = useState(true)
     const [showForm, setShowForm] = useState(true)
     const [{email,password,name, phone}, handleChange] = useForm({name:'',phone:'',email:'', password : '', type:'Seller'})
     const params = useParams()
     const onCreateUser = async() =>{
         const result = await User.register({email,password,name, phone})
         if(result.status == 201){
-            toast.success(result.data.message)
+            Ok(result.data.message)
             getUser()
         }else if(result.response?.status == 400){
 
@@ -71,7 +72,8 @@ export default function UserPage(){
                     </div>
                     <div className="w-5/12 flex gap-3 items-center justify-end">
                         <Reload onClick={getUser}/>
-                        <span className="h-10 bg-black text-white hover:bg-gray-900 transition-all cursor-pointer duration-500 hover:ring-4 hover:ring-gray-400 rounded-xl px-2 flex items-center" onClick={()=>setShowForm(d => d = !d)}><BsPlus className="w-6 h-6"/>Create</span>
+                        <DeleteBtn onClick={()=>setDeletePopup(d => d= !d)}/>
+                        <Link href='/sudo/users#create' className="h-10 bg-black text-white hover:bg-gray-900 transition-all cursor-pointer duration-500 hover:ring-4 hover:ring-gray-400 rounded-xl px-2 flex items-center" onClick={()=>setShowForm(d => d = !d)}><BsPlus className="w-6 h-6"/>Create</Link>
                     </div>
                 </div>
             </div>
