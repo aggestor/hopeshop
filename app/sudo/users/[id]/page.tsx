@@ -10,7 +10,7 @@ import { UserInfoType as tUser } from "@/types";
 import Reload from "../../components/Reload";
 import formatPhoneNumber from "@/utils/format-phone-number";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import parseImage from "@/utils/parse-image";
 import useMoment from "@/utils/use-moment";
@@ -20,10 +20,12 @@ import DeleteBtn from "../../components/DeleteBtn";
 export default function UserPage(){
     const [user, setUser] =  useState<tUser>()
     const [loading, setLoading] = useState(true)
-    const [deletePopup,setDeletePopup] = useState(true)
+    const [deletePopup,setDeletePopup] = useState(false)
+    const [isDelete,setIsDelete] = useState(false)
     const [showForm, setShowForm] = useState(true)
     const [{email,password,name, phone}, handleChange] = useForm({name:'',phone:'',email:'', password : '', type:'Seller'})
     const params = useParams()
+    const router = useRouter()
     const onCreateUser = async() =>{
         const result = await User.register({email,password,name, phone})
         if(result.status == 201){
@@ -57,12 +59,21 @@ export default function UserPage(){
             Oups("Something went wrong ")
         }
     }
+    const deleteUser =  async () =>{
+        const rs = await User.delete(params.id as string)
+        if(rs.status == 201){
+            Ok("User deleted successfully")
+            router.push('/sudo/users')
+        }else{
+            Oups("Something went wrong ")
+        }
+    }
     useEffect(()=>{
         getUser()
     },[])
     return <div className="w-[97.5%] mx-auto p-3 rounded-lg h-full">
         <div className="w-[85%] mx-auto h-full">
-            <div className="w-full mx-auto rounded-xl p-4 bg-white">
+            <div className="w-full mx-auto rounded-xl relative p-4 bg-white">
                 <div className="flex w-full justify-between">
                     <div className="flex  items-center gap-3">
                     <GoBack/>
@@ -70,10 +81,18 @@ export default function UserPage(){
                         <span className="w-10 h-10 rounded-xl border grid place-items-center"><BsPeople className="w-6 h-6"/></span> 
                         <h2 className="text-xl">User Profile</h2>
                     </div>
-                    <div className="w-5/12 flex gap-3 items-center justify-end">
+                    <div className="w-5/12 flex gap-3  items-center justify-end">
                         <Reload onClick={getUser}/>
-                        <DeleteBtn onClick={()=>setDeletePopup(d => d= !d)}/>
+                        <DeleteBtn onBlur={()=> !isDelete && setDeletePopup(false)}  onClick={()=>setDeletePopup(d => d = !d)}/>
                         <Link href='/sudo/users#create' className="h-10 bg-black text-white hover:bg-gray-900 transition-all cursor-pointer duration-500 hover:ring-4 hover:ring-gray-400 rounded-xl px-2 flex items-center" onClick={()=>setShowForm(d => d = !d)}><BsPlus className="w-6 h-6"/>Create</Link>
+                        {deletePopup && <div tabIndex={0} data-aos='fade-in' data-aos-duration='500' className="w-[400px] p-3 h-48 bg-white ring-4 ring-red-300 rounded-xl absolute top-20 shadow-xl right-0">
+                            <p className="text-xl">Really ?</p>
+                            <p className="text-gray-700 my-2 text-sm">Deleting user <b>{user?.name}</b> will completely erase all his information and will be classified as deleted user. This means not cant search anything based on his informations.</p>
+                            <div className="w-full flex items-center gap-3 h-fit mt-2">
+                                <span onClick={()=> setDeletePopup(false)} className="rounded-xl p-1.5 border hover:bg-gray-50 hover:ring-4 hover:ring-gray-100 transition-all duration-500 cursor-pointer bg-gray-100">Cancel</span>
+                                <span onMouseEnter={()=>setIsDelete(true)} onMouseLeave={()=>setIsDelete(false)} onClick={deleteUser} className="rounded-xl p-1.5 hover:ring-4 hover:ring-red-300 transition-all duration-500 cursor-pointer hover:bg-red-700 text-white bg-red-600">Yes, Delete</span>
+                            </div>
+                        </div>}
                     </div>
                 </div>
             </div>
