@@ -23,6 +23,7 @@ export type UserInfoType = {
     mobile: string
     email : string
     status : number
+    isRegistered : number
     password : boolean
     createdAt : Date
     updatedAt : Date
@@ -56,8 +57,11 @@ export type QuestionInfoType = {
     updatedAt ?: string
 }
 export type CategoryInfoType = {
-    name ?: string
-    type ?: string
-    image ? :string
+    id:string
+    name : string
+    description : string
+    status : number
+    createdAt :string
+    updatedAt : string
 }
 declare module "@editorjs/header"

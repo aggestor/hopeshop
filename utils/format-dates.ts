@@ -1,5 +1,5 @@
 import moment from "moment";
 
-export  function useMoment(input:any){
+export  function formatToAgo(input:any){
     return moment(input).fromNow()
 }
