@@ -80,7 +80,7 @@ export default function Categorization(){
                     </div>
                     {categories.length > 0 && categories.map((u,i) => <Link href={'/sudo/categories/'+u.id} className="flex items-center hover:bg-gray-50 hover:ring-4 hover:ring-gray-200 my-3 transition-all duration-500 hover:text-base text-gray-700  p-2 odd:bg-gray-100 rounded-xl" key={u.name}>
                         <div className="w-1/12">{i+1}</div>
-                        <div className="font-semibold w-4/12">{u.name}</div>
+                        <div className="font-semibold w-5/12">{u.name}</div>
                         <div className="w-3/12 text-sm">{u.description}</div>
                         <div className="w-3/12 text-sm">{formatToAgo(u.updatedAt)}</div>
                         <div className="w-1/12 text-sm">
@@ -90,12 +90,12 @@ export default function Categorization(){
 
                     </Link>)}
                 </div>
-                <div className={`${showForm ? 'flex' : 'hidden'} flex-col w-4/12 mt-5 rounded-xl bg-white p-4`}>
+                <div className={`${showForm ? 'flex' : 'hidden'} flex-col w-4/12 h-fit mt-5 rounded-xl bg-white p-4`}>
                     <p className="text-lg">Create a new category</p>
                     <small className="mb-5 text-gray-500">Categorization will help to not mix products between them</small>
                     <TextInput  placeholder="Full name" value={name} onChange={handleChange}  name='name'/>
                     <TextInput  placeholder="Short description" value={description} onChange={handleChange} name='description'/>
-                    <PrimaryButton className="mt-3" onClick={onCreateCategory}>Create category</PrimaryButton>
+                    <PrimaryButton className="mt-3 mb-3" onClick={onCreateCategory}>Create category</PrimaryButton>
                 </div>
            </div>
         </div>

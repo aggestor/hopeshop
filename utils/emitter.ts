@@ -6,9 +6,9 @@ export function Ok(message:string){
 export function Oups(message:string){
     return toast.error(message)
 }
-export function Attention(message: string){
+export function Humm(message: string){
     return toast.warning(message)
 }
-export function Inform(message:string){
+export function Hey(message:string){
     return toast.info(message)
 }
