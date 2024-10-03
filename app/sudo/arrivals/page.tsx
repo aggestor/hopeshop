@@ -6,11 +6,11 @@ import TextInput from "@/components/TextInput";
 import useForm from "@/hooks/useForm";
 import PrimaryButton from "@/components/PrimaryButton";
 import { CategoryInfoType as tCat } from "@/types";
-import { toast } from "sonner";
 import Reload from "../components/Reload";
 import Link from "next/link";
-import Category from "@/services/Category";
 import {formatToAgo} from "@/utils/format-dates";
+import { Ok } from "@/utils/emitter";
+import Arrival from "@/services/Arrival";
 
 export default function Arrivals(){
     const [arrivals, setArrivals] =  useState<tCat[]>([])
@@ -35,16 +35,16 @@ export default function Arrivals(){
     const onClickFilter = () => inputRef.current && inputRef.current.focus()
     const [{description,name}, handleChange] = useForm({name:'',description:''})
     const onCreateCategory = async() =>{
-        const result = await Category.create({description,name})
+        const result = await Arrival.create({description,name})
         if(result.status == 201){
-            toast.success(result.data.message)
-            getCategorization()
+            Ok(result.data.message)
+            getArrivals()
         }else if(result.response?.status == 400){
 
         }
     }
-    const getCategorization = async () =>{
-        const u = await Category.get()
+    const getArrivals = async () =>{
+        const u = await Arrival.get()
         if(u.status == 200){
             setArrivals(u.data.categories)
             setCopyArr(u.data.categories)
@@ -52,7 +52,7 @@ export default function Arrivals(){
         setLoading(false)
     }
     useEffect(()=>{
-        getCategorization()
+        getArrivals()
     },[])
     return <div className="w-[97.5%] mx-auto p-3 rounded-lg h-full">
         <div className="w-[85%] mx-auto h-full">
