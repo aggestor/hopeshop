@@ -33,7 +33,16 @@ export default function ArrivalPage(){
         const result = await Arrival.update(params.id as string,{name,kg,cbm,box,description,date})
         if(result.status == 201){
             Ok(result.data.message)
-            getArrival()
+            setArrrival(result.data.arrival)
+            const ar :tArr = result.data.arrival
+            setDefault({
+                name : ar.name,
+                description : ar.description,
+                date: ar.loadedAt.split("T")[0],
+                cbm: ar.volume,
+                kg:ar.weight,
+                box:ar.boxes,
+            })
         }else if(result.response?.status == 400){
 
         }
@@ -42,9 +51,14 @@ export default function ArrivalPage(){
         const u = await Arrival.get(params.id as string)
         if(u.status == 200){
             setArrrival(u.data.arrival)
-            const ar = u.data.arrival
+            const ar :tArr = u.data.arrival
             setDefault({
-                name : ar.name
+                name : ar.name,
+                description : ar.description,
+                date: ar.loadedAt.split("T")[0],
+                cbm: ar.volume,
+                kg:ar.weight,
+                box:ar.boxes,
             })
             
         }
@@ -80,7 +94,7 @@ export default function ArrivalPage(){
         getArrival()
     },[])
     return <div className="w-[97.5%] mx-auto p-3 rounded-lg h-full">
-        <div className="w-[85%] mx-auto h-full">
+        <div className="w-[95%] mx-auto h-full">
             <div className="w-full mx-auto rounded-xl relative p-4 bg-white">
                 <div className="flex w-full justify-between">
                     <div className="flex  items-center gap-3">
@@ -92,7 +106,7 @@ export default function ArrivalPage(){
                     <div className="w-5/12 flex gap-3  items-center justify-end">
                         <Reload onClick={getArrival}/>
                         <DeleteBtn onBlur={()=> !isDelete && setDeletePopup(false)}  onClick={()=>setDeletePopup(d => d = !d)}/>
-                        <Link href='/sudo/users#create' className="h-10 bg-black text-white hover:bg-gray-900 transition-all cursor-pointer duration-500 hover:ring-4 hover:ring-gray-400 rounded-xl px-2 flex items-center" onClick={()=>setShowForm(d => d = !d)}><BsPlus className="w-6 h-6"/>Create</Link>
+                        <Link href='/sudo/arrivals#create' className="h-10 bg-black text-white hover:bg-gray-900 transition-all cursor-pointer duration-500 hover:ring-4 hover:ring-gray-400 rounded-xl px-2 flex items-center" onClick={()=>setShowForm(d => d = !d)}><BsPlus className="w-6 h-6"/>Create</Link>
                         {deletePopup && <div tabIndex={0} data-aos='fade-in' data-aos-duration='500' className="w-[400px] p-3 h-48 bg-white ring-4 ring-red-300 rounded-xl absolute top-20 shadow-xl right-0">
                             <p className="text-xl">Really ?</p>
                             <p className="text-gray-700 my-2 text-sm">Deleting arrival <b>{arrival?.name}</b> will completely erase all its information and will be classified as deleted user. This means not cant search anything based on his informations.</p>
@@ -107,7 +121,7 @@ export default function ArrivalPage(){
            <div className="flex w-full gap-3">
             <div className={`${showForm ? 'w-8/12' : 'w-full'} h-fit transition-all duration-500 mt-5 rounded-xl bg-white p-4`}>
                     <div className="grid grid-cols-12 gap-3">
-                        <div className=" col-span-7 mt-1">
+                        <div className=" col-span-7 mb-4 mt-1">
                             <h2 className="text-xl flex text-indigo-600 items-center"><span className="flex items-center justify-center h-8 w-8 border rounded-lg bg-gray-100  mr-4"><BsUpload/></span>Loaded on {formatToReadableDate(arrival?.loadedAt)}</h2>
                             <p className="flex items-center my-2"><span className="flex items-center justify-center h-8 w-8 border rounded-lg bg-gray-100 mr-4"><BsBoxes/></span><span className="text-gray-600">Packed in :  {arrival?.boxes} boxes</span></p>
                             <p className="flex items-center my-2"><span className="flex items-center justify-center h-8 w-8 border rounded-lg bg-gray-100 mr-4"><FaTruckLoading/></span><span className="text-gray-600">Volume of  {arrival?.volume}</span></p>
@@ -127,8 +141,8 @@ export default function ArrivalPage(){
                     </div>
                 </div>
                 <div className={`${showForm ? 'flex' : 'hidden'} flex-col w-4/12 h-fit mt-5 rounded-xl bg-white p-4`}>
-                    <p className="text-lg">Create a new arrival</p>
-                    <small className="mb-5 text-gray-500">When you have a new arrival create it here.</small>
+                    <p className="text-lg">Update  {arrival?.name}</p>
+                    <small className="mb-2 text-gray-500">Change the infos in the fields below to update an arrival.</small>
                     <TextInput  placeholder="Full name" value={name} onChange={handleChange}  name='name'/>
                     <div className="flex gap-3">
                         <TextInput  placeholder="Weight" value={kg} onChange={handleChange} name='kg'/>
@@ -137,7 +151,7 @@ export default function ArrivalPage(){
                     </div>
                     <TextInput  placeholder="Short description" value={description} onChange={handleChange} name='description'/>
                     <TextInput  value={date} type="date" onChange={handleChange} name='date'/>
-                    <PrimaryButton className="mt-3 mb-3" onClick={onUpdate}>Create arrival</PrimaryButton>
+                    <PrimaryButton className="mt-3" onClick={onUpdate}>Update arrival</PrimaryButton>
                 </div>
            </div>
         </div>
