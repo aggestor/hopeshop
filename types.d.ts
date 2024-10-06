@@ -64,4 +64,16 @@ export type CategoryInfoType = {
     createdAt :string
     updatedAt : string
 }
+export type Arrival = {
+    id: string
+    name: string
+    description: string
+    status: number
+    volume: string
+    weight: string
+    boxes: number
+    loadedAt  : date
+    createdAt  : date
+    updatedAt : date
+}
 declare module "@editorjs/header"

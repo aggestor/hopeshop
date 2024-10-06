@@ -6,7 +6,7 @@ const Arrival = {
         return await Services.post('/arr/create',data)
     },
    async get(id?:string) : Promise<Response>{
-        return await Services.get(id ?"/arr/"+id : "/c")
+        return await Services.get(id ?"/arr/"+id : "/arr")
     },
    async delete(id: string) : Promise<Response>{
         return await Services.remove("/arr/"+id)
