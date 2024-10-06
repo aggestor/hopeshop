@@ -5,6 +5,7 @@ export default function useForm(
 ): [
   Record<string, string | number | boolean>,
     ChangeEventHandler<HTMLInputElement>,
+    (object: any) => void
   ] {
   const [values, setValues] = useState<
     Record<string, string | number | boolean>>( initialValues);
@@ -15,6 +16,9 @@ export default function useForm(
         ...values,
         [event.target.name]: event.target.value,
       });
+    },
+    (object : any):void => {
+      setValues(object)
     }
   ];
 }

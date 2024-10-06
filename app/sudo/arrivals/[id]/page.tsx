@@ -1,0 +1,145 @@
+"use client"
+import { BsArrow90DegDown, BsAt, BsBoxes, BsCalendar2, BsCheck, BsClockHistory, BsInfoCircle, BsListStars, BsPeople, BsPhone, BsPlus, BsToggleOff, BsToggleOn, BsUpload } from "react-icons/bs";
+import GoBack from "../../components/GoBack";
+import { useEffect, useState } from "react";
+import TextInput from "@/components/TextInput";
+import useForm from "@/hooks/useForm";
+import PrimaryButton from "@/components/PrimaryButton";
+import User from "@/services/User";
+import { Arrival as tArr } from "@/types";
+import Reload from "../../components/Reload";
+import formatPhoneNumber from "@/utils/format-phone-number";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import Image from "next/image";
+import parseImage from "@/utils/parse-image";
+import {useMoment} from "@/utils/use-moment";
+import { Ok, Oups } from "@/utils/emitter";
+import DeleteBtn from "../../components/DeleteBtn";
+import Arrival from "@/services/Arrival";
+import { formatToAgo, formatToReadableDate } from "@/utils/format-dates";
+import { FaTruckLoading, FaWeight, FaWeightHanging } from "react-icons/fa";
+
+export default function ArrivalPage(){
+    const [arrival, setArrrival] =  useState<tArr>()
+    const [loading, setLoading] = useState(true)
+    const [deletePopup,setDeletePopup] = useState(false)
+    const [isDelete,setIsDelete] = useState(false)
+    const [showForm, setShowForm] = useState(true)
+    const [{name,kg,cbm,box,description,date}, handleChange,setDefault] = useForm({name:'',description:'',kg:'',cbm:'',box:'',date:new Date().toISOString().split('T')[0]})
+    const params = useParams()
+    const router = useRouter()
+    const onUpdate = async() =>{
+        const result = await Arrival.update(params.id as string,{name,kg,cbm,box,description,date})
+        if(result.status == 201){
+            Ok(result.data.message)
+            getArrival()
+        }else if(result.response?.status == 400){
+
+        }
+    }
+    const getArrival = async () =>{
+        const u = await Arrival.get(params.id as string)
+        if(u.status == 200){
+            setArrrival(u.data.arrival)
+            const ar = u.data.arrival
+            setDefault({
+                name : ar.name
+            })
+            
+        }
+    }
+    const blockArrival =  async () =>{
+        const rs = await Arrival.block(params.id as string)
+        if(rs.status == 201){
+            getArrival()
+            Ok("Arrival blocked successfully")
+        }else{
+            Oups("Something went wrong ")
+        }
+    }
+    const unBlockArrival =  async () =>{
+        const rs = await Arrival.unblock(params.id as string)
+        if(rs.status == 201){
+            getArrival()
+            Ok("Arrival unblocked successfully")
+        }else{
+            Oups("Something went wrong ")
+        }
+    }
+    const deleteUser =  async () =>{
+        const rs = await User.delete(params.id as string)
+        if(rs.status == 201){
+            Ok("Arrival deleted successfully")
+            router.push('/sudo/arrivals')
+        }else{
+            Oups("Something went wrong ")
+        }
+    }
+    useEffect(()=>{
+        getArrival()
+    },[])
+    return <div className="w-[97.5%] mx-auto p-3 rounded-lg h-full">
+        <div className="w-[85%] mx-auto h-full">
+            <div className="w-full mx-auto rounded-xl relative p-4 bg-white">
+                <div className="flex w-full justify-between">
+                    <div className="flex  items-center gap-3">
+                    <GoBack/>
+                        <span className="h-8 border-l">  </span>
+                        <span className="w-10 h-10 rounded-xl border grid place-items-center"><BsArrow90DegDown className="w-6 h-6"/></span> 
+                        <h2 className="text-xl">{arrival?.name || "Wait, Loading..."}</h2>
+                    </div>
+                    <div className="w-5/12 flex gap-3  items-center justify-end">
+                        <Reload onClick={getArrival}/>
+                        <DeleteBtn onBlur={()=> !isDelete && setDeletePopup(false)}  onClick={()=>setDeletePopup(d => d = !d)}/>
+                        <Link href='/sudo/users#create' className="h-10 bg-black text-white hover:bg-gray-900 transition-all cursor-pointer duration-500 hover:ring-4 hover:ring-gray-400 rounded-xl px-2 flex items-center" onClick={()=>setShowForm(d => d = !d)}><BsPlus className="w-6 h-6"/>Create</Link>
+                        {deletePopup && <div tabIndex={0} data-aos='fade-in' data-aos-duration='500' className="w-[400px] p-3 h-48 bg-white ring-4 ring-red-300 rounded-xl absolute top-20 shadow-xl right-0">
+                            <p className="text-xl">Really ?</p>
+                            <p className="text-gray-700 my-2 text-sm">Deleting arrival <b>{arrival?.name}</b> will completely erase all its information and will be classified as deleted user. This means not cant search anything based on his informations.</p>
+                            <div className="w-full flex items-center gap-3 h-fit mt-2">
+                                <span onClick={()=> setDeletePopup(false)} className="rounded-xl p-1.5 border hover:bg-gray-50 hover:ring-4 hover:ring-gray-100 transition-all duration-500 cursor-pointer bg-gray-100">Cancel</span>
+                                <span onMouseEnter={()=>setIsDelete(true)} onMouseLeave={()=>setIsDelete(false)} onClick={deleteUser} className="rounded-xl p-1.5 hover:ring-4 hover:ring-red-300 transition-all duration-500 cursor-pointer hover:bg-red-700 text-white bg-red-600">Yes, Delete</span>
+                            </div>
+                        </div>}
+                    </div>
+                </div>
+            </div>
+           <div className="flex w-full gap-3">
+            <div className={`${showForm ? 'w-8/12' : 'w-full'} h-fit transition-all duration-500 mt-5 rounded-xl bg-white p-4`}>
+                    <div className="grid grid-cols-12 gap-3">
+                        <div className=" col-span-7 mt-1">
+                            <h2 className="text-xl flex text-indigo-600 items-center"><span className="flex items-center justify-center h-8 w-8 border rounded-lg bg-gray-100  mr-4"><BsUpload/></span>Loaded on {formatToReadableDate(arrival?.loadedAt)}</h2>
+                            <p className="flex items-center my-2"><span className="flex items-center justify-center h-8 w-8 border rounded-lg bg-gray-100 mr-4"><BsBoxes/></span><span className="text-gray-600">Packed in :  {arrival?.boxes} boxes</span></p>
+                            <p className="flex items-center my-2"><span className="flex items-center justify-center h-8 w-8 border rounded-lg bg-gray-100 mr-4"><FaTruckLoading/></span><span className="text-gray-600">Volume of  {arrival?.volume}</span></p>
+                            <p className="flex items-center my-2"><span className="flex items-center justify-center h-8 w-8 border rounded-lg bg-gray-100 mr-4"><FaWeight/></span><span className="text-gray-600">Weight of  {arrival?.weight}</span></p>
+                            {arrival?.status == 1 ? <p className="flex items-center my-2"><span onClick={blockArrival} className="flex cursor-pointer hover:ring-4 hover:ring-green-300 transition-all duration-500 items-center justify-center h-8 w-8 border border-green-400 rounded-lg bg-green-100 text-green-600 mr-4"><BsToggleOn  className="h-5 w-5"/></span><span className="text-green-600 font-semibold">Active</span></p> : 
+                            <p className="flex items-center my-2"><span onClick={unBlockArrival} className="flex cursor-pointer hover:ring-4 hover:ring-red-300 transition-all duration-500 items-center justify-center h-8 w-8 border border-red-400 rounded-lg bg-red-100 text-red-600 mr-4"><BsToggleOff className="w-5 h-5" /></span><span className="text-red-600 font-semibold">Banned</span></p> }
+                            <p className="flex items-center my-2"><span className="flex items-center justify-center h-8 w-8 border rounded-lg bg-gray-100 mr-4"><BsCalendar2/></span><span className="text-gray-600">Last update :  {formatToAgo(arrival?.updatedAt)}</span></p>
+                            <p className="flex items-center my-2"><span className="flex items-center justify-center h-8 w-8 border rounded-lg bg-gray-100 mr-4"><BsClockHistory/></span><span className="text-gray-600">Createed {formatToAgo(arrival?.createdAt)}</span></p>
+                            <p className="flex items-center my-2"><span className="flex items-center justify-center h-8 w-8 border rounded-lg bg-gray-100 mr-4"><BsInfoCircle/></span><span className="text-gray-600">{arrival?.description}</span></p>
+                        </div>
+                        <div className="col-span-5 grid place-items-center h-full">
+                            <div className="w-72 rounded-xl overflow-hidden h-72">
+                                <Image className="bg-contain w-full h-full" src={'/images/loading.webp'} width={400} height={100} alt={"A guy just loading goods"}/>
+                            </div>
+                        </div>
+    
+                    </div>
+                </div>
+                <div className={`${showForm ? 'flex' : 'hidden'} flex-col w-4/12 h-fit mt-5 rounded-xl bg-white p-4`}>
+                    <p className="text-lg">Create a new arrival</p>
+                    <small className="mb-5 text-gray-500">When you have a new arrival create it here.</small>
+                    <TextInput  placeholder="Full name" value={name} onChange={handleChange}  name='name'/>
+                    <div className="flex gap-3">
+                        <TextInput  placeholder="Weight" value={kg} onChange={handleChange} name='kg'/>
+                        <TextInput  placeholder="Volume" value={cbm} onChange={handleChange} name='cbm'/>
+                        <TextInput  placeholder="Boxes" value={box} onChange={handleChange} name='box'/>
+                    </div>
+                    <TextInput  placeholder="Short description" value={description} onChange={handleChange} name='description'/>
+                    <TextInput  value={date} type="date" onChange={handleChange} name='date'/>
+                    <PrimaryButton className="mt-3 mb-3" onClick={onUpdate}>Create arrival</PrimaryButton>
+                </div>
+           </div>
+        </div>
+    </div>
+}
