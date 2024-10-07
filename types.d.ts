@@ -75,5 +75,6 @@ export type Arrival = {
     loadedAt  : date
     createdAt  : date
     updatedAt : date
+    prod : ProductInfo
 }
 declare module "@editorjs/header"

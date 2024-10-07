@@ -5,6 +5,12 @@ const Arrival = {
    async  create(data : Record<string, any>) : Promise<Response>{
         return await Services.post('/arr/create',data)
     },
+   async  addItem(id:string,data : Record<string, any>) : Promise<Response>{
+        return await Services.put('/arr/nwitm/'+id,data)
+    },
+   async  getItems(id:string) : Promise<Response>{
+        return await Services.get('/arr/'+id+'/itms')
+    },
    async get(id?:string) : Promise<Response>{
         return await Services.get(id ?"/arr/"+id : "/arr")
     },

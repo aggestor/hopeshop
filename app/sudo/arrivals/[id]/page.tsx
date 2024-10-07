@@ -6,27 +6,28 @@ import TextInput from "@/components/TextInput";
 import useForm from "@/hooks/useForm";
 import PrimaryButton from "@/components/PrimaryButton";
 import User from "@/services/User";
-import { Arrival as tArr } from "@/types";
+import { Arrival as tArr,ProductInfo } from "@/types";
 import Reload from "../../components/Reload";
-import formatPhoneNumber from "@/utils/format-phone-number";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import parseImage from "@/utils/parse-image";
-import {useMoment} from "@/utils/use-moment";
 import { Ok, Oups } from "@/utils/emitter";
 import DeleteBtn from "../../components/DeleteBtn";
 import Arrival from "@/services/Arrival";
 import { formatToAgo, formatToReadableDate } from "@/utils/format-dates";
-import { FaTruckLoading, FaWeight, FaWeightHanging } from "react-icons/fa";
+import { FaTruckLoading, FaWeight } from "react-icons/fa";
+import Product from "@/services/Product";
 
 export default function ArrivalPage(){
     const [arrival, setArrrival] =  useState<tArr>()
+    const [products, setProducts] = useState<ProductInfo[]>([])
+    const [items, setItems] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
     const [deletePopup,setDeletePopup] = useState(false)
     const [isDelete,setIsDelete] = useState(false)
     const [showForm, setShowForm] = useState(true)
     const [{name,kg,cbm,box,description,date}, handleChange,setDefault] = useForm({name:'',description:'',kg:'',cbm:'',box:'',date:new Date().toISOString().split('T')[0]})
+    const [{quantity,selling,purchase,display,obs,unit,prod}, onChange] = useForm({obs:'',quantity:'',selling:'',purchase:'',display:'', unit:'',prod:''})
     const params = useParams()
     const router = useRouter()
     const onUpdate = async() =>{
@@ -35,32 +36,49 @@ export default function ArrivalPage(){
             Ok(result.data.message)
             setArrrival(result.data.arrival)
             const ar :tArr = result.data.arrival
-            setDefault({
-                name : ar.name,
-                description : ar.description,
-                date: ar.loadedAt.split("T")[0],
-                cbm: ar.volume,
-                kg:ar.weight,
-                box:ar.boxes,
-            })
+            setAr(ar)
         }else if(result.response?.status == 400){
 
         }
+    }
+    const onCreate = async () =>{
+        const result = await Arrival.addItem(params.id as string, {quantity,selling,purchase,display,obs,unit,prod})
+        if(result.status == 201){
+            Ok("Item added successfully !!")
+            getItems()
+        }else if(result.response?.status == 400){
+
+        }
+    }
+    const setAr = (ar : Record<string,any>) =>{
+        setDefault({
+            name : ar.name,
+            description : ar.description,
+            date: ar.loadedAt.split("T")[0],
+            cbm: ar.volume,
+            kg:ar.weight,
+            box:ar.boxes,
+        })
     }
     const getArrival = async () =>{
         const u = await Arrival.get(params.id as string)
         if(u.status == 200){
             setArrrival(u.data.arrival)
             const ar :tArr = u.data.arrival
-            setDefault({
-                name : ar.name,
-                description : ar.description,
-                date: ar.loadedAt.split("T")[0],
-                cbm: ar.volume,
-                kg:ar.weight,
-                box:ar.boxes,
-            })
-            
+            setAr(ar)
+        }
+        setLoading(false)
+    }
+    const getProducts = async () =>{
+        const result = await Product.get()
+        if(result.status == 200){
+            setProducts(result.data.prods)
+        }
+    }
+    const getItems = async () =>{
+        const result = await Arrival.getItems(params.id as string)
+        if(result.status == 200){
+            setItems(result.data.items)
         }
     }
     const blockArrival =  async () =>{
@@ -91,7 +109,7 @@ export default function ArrivalPage(){
         }
     }
     useEffect(()=>{
-        getArrival()
+        getArrival().then(()=>getProducts().then(()=>getItems()))
     },[])
     return <div className="w-[97.5%] mx-auto p-3 rounded-lg h-full">
         <div className="w-[95%] mx-auto h-full">
@@ -152,6 +170,47 @@ export default function ArrivalPage(){
                     <TextInput  placeholder="Short description" value={description} onChange={handleChange} name='description'/>
                     <TextInput  value={date} type="date" onChange={handleChange} name='date'/>
                     <PrimaryButton className="mt-3" onClick={onUpdate}>Update arrival</PrimaryButton>
+                </div>
+           </div>
+           <div className="w-full mt-3 flex gap-3">
+                <div className={`${showForm ? 'flex' : 'hidden'} flex-col w-4/12 h-fit mt-5 rounded-xl bg-white p-4`}>
+                    <p className="text-lg">Add products on   {arrival?.name}</p>
+                    <small className="mb-2 text-gray-500">Fill the form bellow to add a new product to this arrival</small>
+                    <select className="h-10 outline-none text-gray-700 focus:ring-2 focus:ring-black transition-all duration-500 mt-2 bg-gray-100 rounded-xl border px-2"  onChange={onChange}  name='prod'>
+                        <option defaultChecked className="text-gray-700">Choose product</option>
+                    {products?.length > 0 && products.map(c => <option value={c.id}  className="p-2 rounded-xl  hover:ring-gray-200 text-gray-700 cursor-pointer transition-all duration-500 hover:bg-gray-50" key={c.name}>
+                            {c.name}
+                        </option>)}
+                    </select>
+                    <div className="flex gap-3">
+                        <TextInput  placeholder="Purchase" value={purchase} onChange={onChange} name='purchase'/>
+                        <TextInput  placeholder="Sellind" value={selling} onChange={onChange} name='selling'/>
+                        <TextInput  placeholder="Display" value={display} onChange={onChange} name='display'/>
+                    </div>
+                    <div className="flex gap-3">
+                        <TextInput  placeholder="Quantity" value={quantity} onChange={onChange} name='quantity'/>
+                        <TextInput  placeholder="Units" value={unit} onChange={onChange} name='unit'/>
+                    </div>
+                    <TextInput  placeholder="Observration" value={obs} onChange={onChange} name='obs'/>
+                    <PrimaryButton className="mt-3" onClick={onCreate}>Add item</PrimaryButton>
+                </div>
+                <div className={`${showForm ? 'w-8/12' : 'w-full'} transition-all duration-500 mt-3 rounded-xl bg-white p-4`}>
+                    <div className="flex items-center bg-gray-100 p-2 rounded-xl w-full">
+                    <div className="w-1/12">#</div>
+                        <div className="text-sm text-ellipsis overflow-hidden line-clamp-1 w-3/12">Prod</div>
+                        <div className="w-2/12 font-semibold text-ellipsis overflow-hidden line-clamp-1">Prices</div>
+                        <div className="w-1/12 text-sm">Qty</div>
+                        <div className="w-3/12 font-semibold">Math</div>
+                        <div className="w-2/12 text-sm text-ellipsis overflow-hidden line-clamp-1">Last update</div>
+                    </div>
+                    {items.length > 0 && items.map((u,i) => <Link href={'/sudo/arrivals/'+params.id+'/items/'+u.id} className="flex items-center hover:bg-gray-50 hover:ring-4 hover:ring-gray-200 my-3 transition-all duration-500 hover:text-base text-gray-700  p-2  rounded-xl" key={u.name}>
+                        <div className="w-1/12">{i+1}</div>
+                        <div className="text-ellipsis text-sm overflow-hidden line-clamp-1 w-3/12">{u.product.name}</div>
+                        <div className="w-2/12 font-semibold  text-ellipsis overflow-hidden line-clamp-1"> {u.purchasePrice}$ | <span className="text-indigo-600">{u.sellingPrice + '$ - '+u.displayPrice}$</span></div>
+                        <div className="w-1/12 text-sm">{u.quantity} pcs</div>
+                        <div className="w-3/12 font-semibold">{Number(u.purchasePrice) * Number(u.quantity)}$ | <span className="text-indigo-600">{Number(u.sellingPrice) * Number(u.quantity) + '$ ~ '+Number(u.displayPrice) * Number(u.quantity)}$</span></div>
+                        <div className="w-2/12 text-sm text-ellipsis overflow-hidden line-clamp-1">{formatToAgo(u.updatedAt)}</div>
+                    </Link>)}
                 </div>
            </div>
         </div>

@@ -4,7 +4,7 @@ export default function useForm(
   initialValues: Record<string, string | number | boolean>
 ): [
   Record<string, string | number | boolean>,
-    ChangeEventHandler<HTMLInputElement>,
+    ChangeEventHandler<HTMLInputElement | HTMLSelectElement>,
     (object: any) => void
   ] {
   const [values, setValues] = useState<
