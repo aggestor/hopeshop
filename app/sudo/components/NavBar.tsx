@@ -9,7 +9,7 @@ const NavBar = () =>{
                 <SideBarItem name='Dashboard' route='/sudo' Icon={<BsTv className="w-5 h-5" />} />
             </div>
             <div className=" bg-white p-2 overflow-hidden rounded-xl">
-                <SideBarItem name='Arrivals' route='/sudo/users' Icon={<BsArrow90DegDown className="w-5 h-5" />} />
+                <SideBarItem name='Arrivals' route='/sudo/arrivals' Icon={<BsArrow90DegDown className="w-5 h-5" />} />
                 <SideBarItem name='Sells' route='/sudo/sells' Icon={<BsCheck2All className="w-5 h-5" />} />
                 <SideBarItem name='Stocks' route='/sudo/stocks' Icon={<BsStack className="w-5 h-5" />} />
             </div>

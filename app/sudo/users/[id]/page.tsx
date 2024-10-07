@@ -13,9 +13,9 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import parseImage from "@/utils/parse-image";
-import useMoment from "@/utils/use-moment";
 import { Ok, Oups } from "@/utils/emitter";
 import DeleteBtn from "../../components/DeleteBtn";
+import { formatToAgo } from "@/utils/format-dates";
 
 export default function UserPage(){
     const [user, setUser] =  useState<tUser>()
@@ -113,8 +113,8 @@ export default function UserPage(){
                             <p className="flex items-center my-2"><span onClick={unbanUser} className="flex cursor-pointer hover:ring-4 hover:ring-red-300 transition-all duration-500 items-center justify-center h-8 w-8 border border-red-400 rounded-lg bg-red-100 text-red-600 mr-4"><BsToggleOff className="w-5 h-5" /></span><span className="text-red-600 font-semibold">Banned</span></p> }
                             {user?.isRegistered == 1 ? <p className="flex items-center my-2"><span className="flex items-center justify-center h-8 w-8 border border-green-400 rounded-lg bg-green-100 text-green-600 mr-4"><BsCheck className="h-5 w-5"/></span><span className="text-green-600 font-semibold">Verified</span></p> : 
                             <p className="flex items-center my-2"><span className="flex items-center justify-center h-8 w-8 border border-red-400 rounded-lg bg-red-100 text-red-600 mr-4"><BsCheck className="w-5 h-5"/></span><span className="text-red-600 font-semibold">Not Verified</span></p> }
-                            <p className="flex items-center my-2"><span className="flex items-center justify-center h-8 w-8 border rounded-lg bg-gray-100 mr-4"><BsCalendar2/></span><span className="text-gray-600">{useMoment(user?.updatedAt)}</span></p>
-                            <p className="flex items-center my-2"><span className="flex items-center justify-center h-8 w-8 border rounded-lg bg-gray-100 mr-4"><BsClockHistory/></span><span className="text-gray-600">{useMoment(user?.updatedAt)}</span></p>
+                            <p className="flex items-center my-2"><span className="flex items-center justify-center h-8 w-8 border rounded-lg bg-gray-100 mr-4"><BsCalendar2/></span><span className="text-gray-600">{formatToAgo(user?.updatedAt)}</span></p>
+                            <p className="flex items-center my-2"><span className="flex items-center justify-center h-8 w-8 border rounded-lg bg-gray-100 mr-4"><BsClockHistory/></span><span className="text-gray-600">{formatToAgo(user?.updatedAt)}</span></p>
                         </div>
                         <small className="col-span-12"> The informations above belongs to <b>{user?.name}</b> and  agreed with <Link href='/terms' className="underline">HopeShop politics and terms</Link> and all the informations provided are not shared with any thirdparty or affiliate not even anonymously.</small>
                     </div>

@@ -45,16 +45,16 @@ export type ListInfoType = {
     createdAt ?:string
     updatedAt ?: string
 }
-export type QuestionInfoType = {
-    questionText ?: string
-    status ? :string
-    option?: string[]
-    id ?: number
-    fieldType?:string
-    formId?:string,
-    questionId?:string
-    createdAt ?:string
-    updatedAt ?: string
+export type ProductInfo = {
+    status :number
+    id : string
+    name:string,
+    equivalent: string
+    alertStock: number
+    quantity: number
+    createdAt :string
+    updatedAt : string
+    category: CategoryInfoType
 }
 export type CategoryInfoType = {
     id:string
@@ -63,5 +63,18 @@ export type CategoryInfoType = {
     status : number
     createdAt :string
     updatedAt : string
+}
+export type Arrival = {
+    id: string
+    name: string
+    description: string
+    status: number
+    volume: string
+    weight: string
+    boxes: number
+    loadedAt  : date
+    createdAt  : date
+    updatedAt : date
+    prod : ProductInfo
 }
 declare module "@editorjs/header"

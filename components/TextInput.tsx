@@ -9,7 +9,7 @@ interface Props {
     disabled ?: boolean
     value : any
     onChange : (event: ChangeEvent<HTMLInputElement>) => void
-    type ?: "text" | "number" | "tel" | 'email' | 'password'
+    type ?: "text" | "number" | "tel" | 'email' | 'password' | 'date'
 }
 
 const TextInput : React.FC<Props> = ({onChange,className, type='text',value,placeholder,name, autoFill = false}) =>{
