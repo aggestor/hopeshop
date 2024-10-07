@@ -26,7 +26,7 @@ export default function ArrivalPage(){
     const [showInfos, setShowInfos] = useState(false)
     const [deletePopup,setDeletePopup] = useState(false)
     const [isDelete,setIsDelete] = useState(false)
-    const [showForm, setShowForm] = useState(true)
+    const [showForm, setShowForm] = useState(false)
     const [{name,kg,cbm,box,description,date}, handleChange,setDefault] = useForm({name:'',description:'',kg:'',cbm:'',box:'',date:new Date().toISOString().split('T')[0]})
     const [{quantity,selling,purchase,display,obs,unit,prod}, onChange] = useForm({obs:'',quantity:'',selling:'',purchase:'',display:'', unit:'',prod:''})
     const params = useParams()
@@ -174,7 +174,7 @@ export default function ArrivalPage(){
                 </div>
            </div>}
            <div className="w-full mt-3 flex gap-3">
-                <div className={`${showForm ? 'flex' : 'hidden'} flex-col w-4/12 h-fit mt-5 rounded-xl bg-white p-4`}>
+                <div className={`${showForm ? 'flex' : 'hidden'} flex-col w-4/12 h-fit mt-3 rounded-xl bg-white p-4`}>
                     <p className="text-lg">Add products on   {arrival?.name}</p>
                     <small className="mb-2 text-gray-500">Fill the form bellow to add a new product to this arrival</small>
                     <select className="h-10 outline-none text-gray-700 focus:ring-2 focus:ring-black transition-all duration-500 mt-2 bg-gray-100 rounded-xl border px-2"  onChange={onChange}  name='prod'>
