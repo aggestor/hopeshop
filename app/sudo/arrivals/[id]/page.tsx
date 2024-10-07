@@ -1,5 +1,5 @@
 "use client"
-import { BsArrow90DegDown, BsAt, BsBoxes, BsCalendar2, BsCheck, BsClockHistory, BsInfoCircle, BsListStars, BsPeople, BsPhone, BsPlus, BsToggleOff, BsToggleOn, BsUpload } from "react-icons/bs";
+import { BsArrow90DegDown, BsAt, BsBoxes, BsCalendar2, BsCheck, BsChevronDown, BsClockHistory, BsInfoCircle, BsListStars, BsPeople, BsPhone, BsPlus, BsToggleOff, BsToggleOn, BsUpload } from "react-icons/bs";
 import GoBack from "../../components/GoBack";
 import { useEffect, useState } from "react";
 import TextInput from "@/components/TextInput";
@@ -23,6 +23,7 @@ export default function ArrivalPage(){
     const [products, setProducts] = useState<ProductInfo[]>([])
     const [items, setItems] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
+    const [showInfos, setShowInfos] = useState(false)
     const [deletePopup,setDeletePopup] = useState(false)
     const [isDelete,setIsDelete] = useState(false)
     const [showForm, setShowForm] = useState(true)
@@ -119,12 +120,12 @@ export default function ArrivalPage(){
                     <GoBack/>
                         <span className="h-8 border-l">  </span>
                         <span className="w-10 h-10 rounded-xl border grid place-items-center"><BsArrow90DegDown className="w-6 h-6"/></span> 
-                        <h2 className="text-xl">{arrival?.name || "Wait, Loading..."}</h2>
+                        <h2 onClick={()=> setShowInfos(d => d = !d)} className="text-xl flex gap-5 items-center">{arrival?.name || "Wait, Loading..."} <span className="text-sm flex items-center gap-2 p-2 bg-gray-100 cursor-pointer hover:bg-gray-50 transition-all duration-500 hover:ring-4 hover:ring-gray-300 rounded-xl border">Show more <BsChevronDown className={`w-4 h-4${showInfos && 'transform rotate-180'} transition-all duration-500`}/></span></h2>
                     </div>
                     <div className="w-5/12 flex gap-3  items-center justify-end">
                         <Reload onClick={getArrival}/>
                         <DeleteBtn onBlur={()=> !isDelete && setDeletePopup(false)}  onClick={()=>setDeletePopup(d => d = !d)}/>
-                        <Link href='/sudo/arrivals#create' className="h-10 bg-black text-white hover:bg-gray-900 transition-all cursor-pointer duration-500 hover:ring-4 hover:ring-gray-400 rounded-xl px-2 flex items-center" onClick={()=>setShowForm(d => d = !d)}><BsPlus className="w-6 h-6"/>Create</Link>
+                        <span  className="h-10 bg-black text-white hover:bg-gray-900 transition-all cursor-pointer duration-500 hover:ring-4 hover:ring-gray-400 rounded-xl px-2 flex items-center" onClick={()=>setShowForm(d => d = !d)}><BsPlus className="w-6 h-6"/>Add Product</span>
                         {deletePopup && <div tabIndex={0} data-aos='fade-in' data-aos-duration='500' className="w-[400px] p-3 h-48 bg-white ring-4 ring-red-300 rounded-xl absolute top-20 shadow-xl right-0">
                             <p className="text-xl">Really ?</p>
                             <p className="text-gray-700 my-2 text-sm">Deleting arrival <b>{arrival?.name}</b> will completely erase all its information and will be classified as deleted user. This means not cant search anything based on his informations.</p>
@@ -136,8 +137,8 @@ export default function ArrivalPage(){
                     </div>
                 </div>
             </div>
-           <div className="flex w-full gap-3">
-            <div className={`${showForm ? 'w-8/12' : 'w-full'} h-fit transition-all duration-500 mt-5 rounded-xl bg-white p-4`}>
+           {showInfos && <div data-aos='fade-in' data-aos-duration='1500' className="flex w-full gap-3">
+            <div className="w-8/12   h-fit transition-all duration-500 mt-5 rounded-xl bg-white p-4">
                     <div className="grid grid-cols-12 gap-3">
                         <div className=" col-span-7 mb-4 mt-1">
                             <h2 className="text-xl flex text-indigo-600 items-center"><span className="flex items-center justify-center h-8 w-8 border rounded-lg bg-gray-100  mr-4"><BsUpload/></span>Loaded on {formatToReadableDate(arrival?.loadedAt)}</h2>
@@ -158,7 +159,7 @@ export default function ArrivalPage(){
     
                     </div>
                 </div>
-                <div className={`${showForm ? 'flex' : 'hidden'} flex-col w-4/12 h-fit mt-5 rounded-xl bg-white p-4`}>
+                <div className="flex flex-col w-4/12 h-fit mt-5 rounded-xl bg-white p-4">
                     <p className="text-lg">Update  {arrival?.name}</p>
                     <small className="mb-2 text-gray-500">Change the infos in the fields below to update an arrival.</small>
                     <TextInput  placeholder="Full name" value={name} onChange={handleChange}  name='name'/>
@@ -171,7 +172,7 @@ export default function ArrivalPage(){
                     <TextInput  value={date} type="date" onChange={handleChange} name='date'/>
                     <PrimaryButton className="mt-3" onClick={onUpdate}>Update arrival</PrimaryButton>
                 </div>
-           </div>
+           </div>}
            <div className="w-full mt-3 flex gap-3">
                 <div className={`${showForm ? 'flex' : 'hidden'} flex-col w-4/12 h-fit mt-5 rounded-xl bg-white p-4`}>
                     <p className="text-lg">Add products on   {arrival?.name}</p>
