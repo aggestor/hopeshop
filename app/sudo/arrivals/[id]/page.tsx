@@ -204,7 +204,7 @@ export default function ArrivalPage(){
                         <div className="w-3/12 font-semibold">Math</div>
                         <div className="w-2/12 text-sm text-ellipsis overflow-hidden line-clamp-1">Last update</div>
                     </div>
-                    {items.length > 0 && items.map((u,i) => <Link href={'/sudo/arrivals/'+params.id+'/items/'+u.id} className="flex items-center hover:bg-gray-50 hover:ring-4 hover:ring-gray-200 my-3 transition-all duration-500 hover:text-base text-gray-700  p-2  rounded-xl" key={u.name}>
+                    {items.length > 0 && items.map((u,i) => <Link href={'/sudo/prod/'+u.product.id+'&item='+u.id+'&arr='+params.id} className="flex items-center hover:bg-gray-50 hover:ring-4 hover:ring-gray-200 my-3 transition-all duration-500 hover:text-base text-gray-700  p-2  rounded-xl" key={u.name}>
                         <div className="w-1/12">{i+1}</div>
                         <div className="text-ellipsis text-sm overflow-hidden line-clamp-1 w-3/12">{u.product.name}</div>
                         <div className="w-2/12 font-semibold  text-ellipsis overflow-hidden line-clamp-1"> {u.purchasePrice}$ | <span className="text-indigo-600">{u.sellingPrice + '$ - '+u.displayPrice}$</span></div>

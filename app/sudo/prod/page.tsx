@@ -101,7 +101,7 @@ export default function Products(){
                         <div className="w-3/12 text-sm text-ellipsis overflow-hidden line-clamp-1">{u.equivalent || 'Not specified'}</div>
                         <div className="w-3/12 text-sm text-ellipsis overflow-hidden line-clamp-1">{u.category.name}</div>
                         <div className="w-2/12 text-sm">{u.alertStock} pcs</div>
-                        <div className="w-2/12 text-black font-semibold">{u.quantity} pcs</div>
+                        <div className={`w-2/12  font-semibold ${Number(u.quantity) <= Number(u.alertStock) ? ' text-red-600' : 'text-green-600'}`}>{u.quantity} pcs</div>
                         <div className="w-2/12 text-sm text-ellipsis overflow-hidden line-clamp-1">{formatToAgo(u.updatedAt)}</div>
                     </Link>)}
                 </div>
