@@ -77,4 +77,11 @@ export type Arrival = {
     updatedAt : date
     prod : ProductInfo
 }
-declare module "@editorjs/header"
+export type InvioceItemInfo = {
+    prod: string,
+    unit: string,
+    quantity: number,
+    price : number,
+    total : number,
+    id : string
+}
