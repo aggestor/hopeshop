@@ -7,6 +7,9 @@ const Product = {
     get: async function (id?:string){
         return await Services.get(id ? '/prd/'+id : '/prd') as Response
     },
+    getDetailed: async function (id?:string){
+        return await Services.get(id ? '/prd_dlt/'+id : '/prd_dlt') as Response
+    },
     remove: async function (id?:string){
         return await Services.remove(id ? '/product/delete/'+id : '/product/'+id) as Response
     }

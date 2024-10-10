@@ -1,4 +1,4 @@
-import { BsArrow90DegDown, BsCheck2All, BsListNested, BsMenuDown, BsPeople, BsPerson, BsStack, BsTools, BsTv } from "react-icons/bs";
+import { BsArrow90DegDown, BsCheck2All, BsListNested, BsMenuDown, BsPeople, BsPerson, BsReceipt, BsStack, BsTools, BsTv } from "react-icons/bs";
 import SideBarItem from "./SideBarItem"
 import { FaSellcast, FaUserAlt } from "react-icons/fa";
 
@@ -9,8 +9,9 @@ const NavBar = () =>{
                 <SideBarItem name='Dashboard' route='/sudo' Icon={<BsTv className="w-5 h-5" />} />
             </div>
             <div className=" bg-white p-2 overflow-hidden rounded-xl">
-                <SideBarItem name='Arrivals' route='/sudo/arrivals' Icon={<BsArrow90DegDown className="w-5 h-5" />} />
+                <SideBarItem name='Billing' route='/sudo/billing' Icon={<BsReceipt className="w-5 h-5" />} />
                 <SideBarItem name='Sells' route='/sudo/sells' Icon={<BsCheck2All className="w-5 h-5" />} />
+                <SideBarItem name='Arrivals' route='/sudo/arrivals' Icon={<BsArrow90DegDown className="w-5 h-5" />} />
                 <SideBarItem name='Stocks' route='/sudo/stocks' Icon={<BsStack className="w-5 h-5" />} />
             </div>
             <div className=" bg-white p-2 mt-3 overflow-hidden rounded-xl">
